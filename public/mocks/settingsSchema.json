@@ -3,46 +3,54 @@
     "header": "User preferences",
     "checkboxes": [
       {
+        "name": "timerIndication",
         "label": "Timer indication in title?"
       },
       {
+        "name": "browserNotification",
         "label": "Browser notifications?"
       },
       {
+        "name": "autoStart",
         "label": "Auto start pomodoros and breaks?"
       }
     ],
     "goal": {
+      "name": "pomodoroGoal",
       "label": "Pomodoro goal for the day (max. 10 / day)",
+      "min": "1",
+      "max": "10",
       "default": "2"
     },
     "sounds": {
       "header": "Select Sound",
+      "name": "sound",
       "options": [
         {
-          "label": "one",
-          "url": "https://fdsafasdf.com/1"
+          "label": "Alarm Tone",
+          "url": "http://www.orangefreesounds.com/wp-content/uploads/2020/05/Alarm-ringtone.mp3?_=1"
         },
         {
-          "label": "one",
-          "url": "https://fdsafasdf.com/1"
+          "label": "Old Telephone",
+          "url": "http://www.orangefreesounds.com/wp-content/uploads/2018/05/Digital-phone-ringing.mp3?_=1"
         },
         {
-          "label": "one",
-          "url": "https://fdsafasdf.com/1"
+          "label": "Notification Tone",
+          "url": "http://www.orangefreesounds.com/wp-content/uploads/2018/06/Cool-alarm-tone-notification-sound.mp3?_=1"
         },
         {
-          "label": "one",
-          "url": "https://fdsafasdf.com/1"
+          "label": "Buzzer Tone",
+          "url": "http://www.orangefreesounds.com/wp-content/uploads/2016/09/Wake-up-sounds.mp3?_=1"
         },
         {
-          "label": "one",
-          "url": "https://fdsafasdf.com/1"
+          "label": "Cuckoo Tone",
+          "url": "http://www.orangefreesounds.com/wp-content/uploads/2015/03/Cuckoo-clock-sound.mp3?_=1"
         }
       ]
     },
     "volume": {
       "header": "Select Volume",
+      "name": "volume",
       "options": [
         {
           "label": "Mute",
@@ -70,16 +78,19 @@
       "header": "Set Custom Times",
       "subheader": "(in minutes)",
       "pomodoro": {
+        "name": "pomodoroTimer",
         "label": "Pomodoro",
         "max": "60",
         "min": "1"
       },
       "shortbreak": {
+        "name": "shortBreakTimer",
         "label": "Short Break",
         "max": "15",
         "min": "1"
       },
       "longbreak": {
+        "name": "longBreakTimer",
         "label": "Long Break",
         "max": "30",
         "min": "1"
