@@ -12,7 +12,7 @@ export const initialSettingsState = {
   longBreakTimer: 10,
   shortBreakTimer: 5,
   sound:
-    "http://www.orangefreesounds.com/wp-content/uploads/2020/05/Alarm-ringtone.mp3?_=1",
+    "/sounds/Alarm Tone.mp3",
   timerIndication: true,
   browserNotification: true,
 };
@@ -29,15 +29,20 @@ export const afterDelay = (cb, delay) => {
   setTimeout(cb, delay);
 };
 
-export const clearAudioBuffer = () => {
+export const clearAudioBuffer = (audioFile) => {
   try {
-    let audios = [...document.querySelectorAll("audio")];
-    audios?.map((audio) => {
-      audio.currentTime = 0;
-      audio.pause();
-      return null;
-    });
+    if(audioFile) {
+      audioFile.currentTime = 0;
+      audioFile.pause()
+    }
   } catch (error) {
     console.error(error);
   }
 };
+
+export let audioFile = null;
+
+export const initAudio = () => {
+  audioFile = new Audio(initialSettingsState.sound);
+  audioFile.volume = initialSettingsState.volume / 100;
+}

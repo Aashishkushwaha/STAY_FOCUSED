@@ -22,8 +22,10 @@ import {
   APP_NAME,
   getFromLocalStorage,
   afterDelay,
+  audioFile,
   clearAudioBuffer,
 } from "../../utils";
+import { useSnackbar } from "notistack";
 
 const useStyles = makeStyles((theme) => ({
   container: {},
@@ -41,8 +43,39 @@ const useStyles = makeStyles((theme) => ({
       margin: "4px",
       marginBottom: "0px",
     },
+    "& input:invalid": {
+      color: "tomato",
+    },
+    "& input:invalid + *": {
+      borderColor: "tomato",
+      "& > * > *": {
+        color: "tomato",
+      },
+    },
+  },
+  timerContainerHeader: {
+    marginBottom: ".6rem !important",
+  },
+  timerItemContainer: {
+    padding: "0px 8px !important",
+    marginTop: ".25rem !important",
   },
 }));
+
+const validateData = (data) => {
+  if (
+    data.pomodoroGoal < 1 ||
+    data.pomodoroGoal > 10 ||
+    data.pomodoroTimer < 5 ||
+    data.pomodoroTimer > 60 ||
+    data.shortBreakTimer < 2 ||
+    data.shortBreakTimer > 15 ||
+    data.longBreakTimer < 5 ||
+    data.longBreakTimer > 30
+  ) {
+    return 0;
+  } else return 1;
+};
 
 export default function SettingsModal({ settings, open, setOpen }) {
   const {
@@ -57,10 +90,9 @@ export default function SettingsModal({ settings, open, setOpen }) {
   const [settingsState, setSettingsState] = useState(
     getFromLocalStorage(`${APP_NAME}_settings`) || initialSettingsState
   );
-  let audioFile = document.querySelector(`audio[src="${settingsState.sound}"]`);
-
   const buttonHandlers = [];
   const classes = useStyles();
+  const { enqueueSnackbar } = useSnackbar();
 
   const handleClose = () => {
     setOpen(false);
@@ -75,11 +107,17 @@ export default function SettingsModal({ settings, open, setOpen }) {
       alert(e.target.checked);
       setSettingsState({ ...settingsState, [e.target.name]: e.target.checked });
     } else if (type === "number") {
+      if (e.target.name === "volume" && audioFile) {
+        audioFile.volume = e.target.value / 100;
+      }
       setSettingsState({
         ...settingsState,
-        [e.target.name]: parseInt(e.target.value),
+        [e.target.name]: parseInt(e.target.value || 0),
       });
     } else if (type === "text") {
+      if (e.target.name === "sound" && audioFile) {
+        audioFile.src = e.target.value;
+      }
       setSettingsState({
         ...settingsState,
         [e.target.name]: e.target.value,
@@ -88,19 +126,27 @@ export default function SettingsModal({ settings, open, setOpen }) {
   };
 
   const onSaveClick = () => {
-    saveToLocalStorage(`${APP_NAME}_settings`, settingsState);
-    setOpen(false);
+    clearAudioBuffer(audioFile);
+    if (validateData(settingsState)) {
+      saveToLocalStorage(`${APP_NAME}_settings`, settingsState);
+      setOpen(false);
+      enqueueSnackbar("Settings saved successfully.", { variant: "success" });
+    } else {
+      enqueueSnackbar("Error, please provided correct data.", {
+        variant: "error",
+      });
+      setSettingsState(getFromLocalStorage(`${APP_NAME}_settings`));
+    }
   };
 
   const onResetClick = () => {
+    clearAudioBuffer(audioFile);
     setSettingsState(initialSettingsState);
     saveToLocalStorage(`${APP_NAME}_settings`, initialSettingsState);
     setOpen(false);
   };
 
   const onSoundTestClick = () => {
-    clearAudioBuffer();
-
     if (audioFile) {
       audioFile.volume = settingsState.volume / 100;
       audioFile.play();
@@ -146,6 +192,7 @@ export default function SettingsModal({ settings, open, setOpen }) {
             label={goal.label}
             name={goal.name}
             variant="outlined"
+            required
             onChange={(e) => onChange(e, "number")}
             value={settingsState.pomodoroGoal}
             InputProps={{
@@ -157,7 +204,7 @@ export default function SettingsModal({ settings, open, setOpen }) {
             InputLabelProps={{
               shrink: true,
             }}
-            placeholder="Placeholder"
+            placeholder="goals target for today"
           />
           <FormControl variant="outlined" className={classes.formControl}>
             <InputLabel id="demo-controlled-open-select-label">
@@ -202,22 +249,26 @@ export default function SettingsModal({ settings, open, setOpen }) {
             </Select>
           </FormControl>
           <FormControl variant="outlined" className={classes.formControl}>
-            <Typography variant="body1">
+            <Typography
+              variant="body1"
+              className={classes.timerContainerHeader}
+            >
               {`${timers.header} ${timers.subheader}`}
             </Typography>
             <Grid container spacing={2}>
-              <Grid item xs={4}>
+              <Grid className={classes.timerItemContainer} item xs={12} sm={4}>
                 <TextField
                   type="number"
                   id="outlined-number"
                   fullWidth
+                  required
                   label={timers.pomodoro.label}
                   name={timers.pomodoro.name}
                   onChange={(e) => onChange(e, "number")}
                   margin="dense"
                   variant="outlined"
                   value={settingsState.pomodoroTimer}
-                  helperText={`(max ${timers.pomodoro.max} min.)`}
+                  helperText={`(min ${timers.pomodoro.min} / max ${timers.pomodoro.max} min.)`}
                   InputLabelProps={{
                     shrink: true,
                   }}
@@ -227,14 +278,15 @@ export default function SettingsModal({ settings, open, setOpen }) {
                       min: timers.pomodoro.min,
                     },
                   }}
-                  placeholder="Placeholder"
+                  placeholder="Pomodoro Time"
                 />
               </Grid>
-              <Grid item xs={4}>
+              <Grid className={classes.timerItemContainer} item xs={12} sm={4}>
                 <TextField
                   type="number"
                   id="outlined-number"
                   fullWidth
+                  required
                   onChange={(e) => onChange(e, "number")}
                   label={timers.shortbreak.label}
                   name={timers.shortbreak.name}
@@ -250,15 +302,16 @@ export default function SettingsModal({ settings, open, setOpen }) {
                       min: timers.shortbreak.min,
                     },
                   }}
-                  placeholder="Placeholder"
-                  helperText={`(max ${timers.shortbreak.max} min.)`}
+                  placeholder="Short Break Time"
+                  helperText={`(min ${timers.shortbreak.min} / max ${timers.shortbreak.max} min.)`}
                 />
               </Grid>
-              <Grid item xs={4}>
+              <Grid className={classes.timerItemContainer} item xs={12} sm={4}>
                 <TextField
                   type="number"
                   id="outlined-number"
                   fullWidth
+                  required
                   onChange={(e) => onChange(e, "number")}
                   label={timers.longbreak.label}
                   name={timers.longbreak.name}
@@ -274,8 +327,8 @@ export default function SettingsModal({ settings, open, setOpen }) {
                   InputLabelProps={{
                     shrink: true,
                   }}
-                  helperText={`(max ${timers.longbreak.max} min.)`}
-                  placeholder="Placeholder"
+                  helperText={`(min ${timers.longbreak.min} / max ${timers.longbreak.max} min.)`}
+                  placeholder="Long Break Time"
                 />
               </Grid>
             </Grid>

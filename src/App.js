@@ -5,15 +5,14 @@ import TodoList from "./Components/Todo/TodoList";
 import ThemeToggler from "./Components/ThemeToggler";
 import Pomodoro from "./Components/Pomodoro/Pomodoro";
 import { ThemeProvider, Grid } from "@material-ui/core";
-import { APP_NAME, SCHEMA_URL, getFromLocalStorage } from "./utils";
 import SettingsModal from "./Components/Settings/SettingsModal";
 import SettingsButton from "./Components/Settings/SettingsButton";
+import { APP_NAME, SCHEMA_URL, getFromLocalStorage, initAudio } from "./utils";
 
 function App() {
   const [theme, changeTheme] = useState(
     getFromLocalStorage(`${APP_NAME}_selected_theme`) || "light"
   );
-
   const [todos, setTodos] = useState({
     header: "My Tasks",
     items: getFromLocalStorage(`${APP_NAME}_todos_items`) || [],
@@ -26,12 +25,14 @@ function App() {
     async function fetchData(URL) {
       let response = await (await fetch(URL)).json();
 
-      response?.settings.sounds?.options?.map((option) => {
-        let audio = document.createElement("audio");
-        audio.src = option.url;
-        document.body.appendChild(audio);
-        return null;
-      });
+      // response?.settings.sounds?.options?.map((option) => {
+      //   let audio = document.createElement("audio");
+      //   audio.src = option.url;
+      //   document.body.appendChild(audio);
+      //   return null;
+      // });
+
+      initAudio();
 
       setSchema(response);
     }
