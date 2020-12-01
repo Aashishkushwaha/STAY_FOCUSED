@@ -20,8 +20,8 @@ const useStyles = makeStyles((theme) => ({
     justifyContent: "center",
     zIndex: 10000,
     [theme.breakpoints.down('xs')]: {
-      width: 35,
-      height: 35
+      width: 30,
+      height: 30
     },
 
     "&:hover": {
@@ -35,6 +35,9 @@ const useStyles = makeStyles((theme) => ({
   icon: {
     transition: "transform .1s",
     backfaceVisibility: "hidden",
+    [theme.breakpoints.down('xs')]: {
+      fontSize: "2rem"
+    }
   },
 }));
 

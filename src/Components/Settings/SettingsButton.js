@@ -6,6 +6,7 @@ const useStyles = makeStyles((theme) => ({
   settingsWrapper: {
     width: 40,
     height: 40,
+    zIndex: 1000,
     right: "2rem",
     top: "1.5rem",
     display: "flex",
@@ -17,8 +18,8 @@ const useStyles = makeStyles((theme) => ({
     justifyContent: "center",
     [theme.breakpoints.down('xs')]: {
       top: "1rem",
-      width: 35,
-      height: 35
+      width: 30,
+      height: 30
     },
 
     "&:hover": {
@@ -32,6 +33,9 @@ const useStyles = makeStyles((theme) => ({
   icon: {
     transition: "transform .1s",
     backfaceVisibility: "hidden",
+    [theme.breakpoints.down('xs')]: {
+      fontSize: "2rem"
+    }
   },
 }));
 
@@ -45,7 +49,7 @@ const SettingsButton = ({ data }) => {
 
   return (
     <div className={classes.settingsWrapper} onClick={toggleTheme}>
-      <SettingsIcon />
+      <SettingsIcon className={classes.icon}/>
     </div>
   );
 };
