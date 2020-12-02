@@ -8,19 +8,15 @@ import {
 } from "@material-ui/core";
 import DeleteIcon from "@material-ui/icons/Delete";
 
-const useStyles = makeStyles((theme, isCompleted) => ({
+const useStyles = makeStyles((theme) => ({
   container: {
     display: "flex",
     margin: ".2rem 0",
     alignItems: "center",
     paddingLeft: ".8rem",
     justifyContent: "space-between",
-    "& MuiFormControlLabel-label": {
-      background: isCompleted ? "red" : "",
-    },
     "&:nth-child(even)": {
       background: "#f1f1f1",
-      
     },
   },
   checkBox: {
@@ -43,7 +39,8 @@ const useStyles = makeStyles((theme, isCompleted) => ({
   label: {
     textOverflow: "ellipsis",
     display: "inline-block",
-    overflow: "hidden"
+    overflow: "hidden",
+    textDecoration: (isCompleted) => isCompleted && "line-through",
   },
   completed: {
     textDecoration: "strike-through",
@@ -53,7 +50,7 @@ const useStyles = makeStyles((theme, isCompleted) => ({
     display: "block",
     paddingBottom: ".8rem",
     color: "#999",
-    fontSize: ".9rem"
+    fontSize: ".9rem",
   },
 }));
 
@@ -80,7 +77,9 @@ const TodoItem = ({ data }) => {
           label={<span className={classes.label}>{text}</span>}
           labelPlacement="end"
         />
-        <label className={classes.timeStamp}>{getModifiedDate(createdAt)}</label>
+        <label className={classes.timeStamp}>
+          {getModifiedDate(createdAt)}
+        </label>
       </div>
       <div>
         <IconButton

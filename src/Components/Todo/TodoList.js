@@ -3,6 +3,7 @@ import { Typography, Paper, makeStyles, TextField } from "@material-ui/core";
 import Pagination from "@material-ui/lab/Pagination";
 import TodoItem from "./TodoItem";
 import { saveToLocalStorage, APP_NAME } from "../../utils";
+import { useSnackbar } from "notistack";
 
 const useStyles = makeStyles((theme) => ({
   container: {
@@ -46,6 +47,7 @@ const TodoList = ({ data }) => {
 
   const [taskName, setTaskName] = useState("");
   const [page, setPage] = React.useState(1);
+  const { enqueueSnackbar } = useSnackbar();
 
   const handleChange = (event, value) => {
     setPage(value);
@@ -53,7 +55,9 @@ const TodoList = ({ data }) => {
 
   const addTodo = () => {
     if (taskName.trim() === "" || taskName.trim().length > 35) {
-      return alert("Enter task name... (max. 35 characters allowed)");
+      return enqueueSnackbar("Enter task name... (max. 35 characters allowed)", {
+        variant: "error",
+      });
     }
 
     let newTodoItem = {

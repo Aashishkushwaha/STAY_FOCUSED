@@ -62,16 +62,16 @@ const useStyles = makeStyles((theme) => ({
   },
 }));
 
-const validateData = (data) => {
+const validateData = (data, settings) => {
   if (
-    data.pomodoroGoal < 1 ||
-    data.pomodoroGoal > 10 ||
-    data.pomodoroTimer < 5 ||
-    data.pomodoroTimer > 60 ||
-    data.shortBreakTimer < 2 ||
-    data.shortBreakTimer > 15 ||
-    data.longBreakTimer < 5 ||
-    data.longBreakTimer > 30
+    data.pomodoroGoal < settings.goal.min ||
+    data.pomodoroGoal > settings.goal.max ||
+    data.pomodoroTimer < settings.timers.pomodoro.min ||
+    data.pomodoroTimer > settings.timers.pomodoro.max ||
+    data.shortBreakTimer < settings.timers.shortbreak.min ||
+    data.shortBreakTimer > settings.timers.shortbreak.max ||
+    data.longBreakTimer < settings.timers.longbreak.min ||
+    data.longBreakTimer > settings.timers.longbreak.max
   ) {
     return 0;
   } else return 1;
@@ -95,6 +95,7 @@ export default function SettingsModal({ settings, open, setOpen }) {
   const { enqueueSnackbar } = useSnackbar();
 
   const handleClose = () => {
+    clearAudioBuffer(audioFile);
     setOpen(false);
     afterDelay(
       setSettingsState(getFromLocalStorage(`${APP_NAME}_settings`)),
@@ -104,19 +105,19 @@ export default function SettingsModal({ settings, open, setOpen }) {
 
   const onChange = (e, type) => {
     if (type === "checkbox") {
-      alert(e.target.checked);
       setSettingsState({ ...settingsState, [e.target.name]: e.target.checked });
     } else if (type === "number") {
+      let value = parseInt(e.target.value);
       if (e.target.name === "volume" && audioFile) {
         audioFile.volume = e.target.value / 100;
       }
       setSettingsState({
         ...settingsState,
-        [e.target.name]: parseInt(e.target.value || 0),
+        [e.target.name]: isNaN(value) ? "" : value,
       });
     } else if (type === "text") {
       if (e.target.name === "sound" && audioFile) {
-        audioFile.src = e.target.value;
+        audioFile.src = `/sounds/${e.target.value}.mp3`;
       }
       setSettingsState({
         ...settingsState,
@@ -127,7 +128,7 @@ export default function SettingsModal({ settings, open, setOpen }) {
 
   const onSaveClick = () => {
     clearAudioBuffer(audioFile);
-    if (validateData(settingsState)) {
+    if (validateData(settingsState, settings)) {
       saveToLocalStorage(`${APP_NAME}_settings`, settingsState);
       setOpen(false);
       enqueueSnackbar("Settings saved successfully.", { variant: "success" });
@@ -148,6 +149,7 @@ export default function SettingsModal({ settings, open, setOpen }) {
 
   const onSoundTestClick = () => {
     if (audioFile) {
+      audioFile.src = `/sounds/${settingsState.sound}.mp3`
       audioFile.volume = settingsState.volume / 100;
       audioFile.play();
     }

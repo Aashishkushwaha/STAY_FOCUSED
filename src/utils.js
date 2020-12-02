@@ -4,6 +4,7 @@ export const SCHEMA_URL = process.env.REACT_APP_SCHEMA_LOCAL_URL;
 
 export const initialTheme = "light";
 
+// audio urls changed due to saving in localstorage
 export const initialSettingsState = {
   volume: 50,
   pomodoroGoal: 2,
@@ -12,7 +13,7 @@ export const initialSettingsState = {
   longBreakTimer: 10,
   shortBreakTimer: 5,
   sound:
-    "/sounds/Alarm Tone.mp3",
+    "Alarm Tone",
   timerIndication: true,
   browserNotification: true,
 };
@@ -43,6 +44,6 @@ export const clearAudioBuffer = (audioFile) => {
 export let audioFile = null;
 
 export const initAudio = () => {
-  audioFile = new Audio(initialSettingsState.sound);
+  audioFile = new Audio(`/sounds/${initialSettingsState.sound}.mp3`);
   audioFile.volume = initialSettingsState.volume / 100;
 }
