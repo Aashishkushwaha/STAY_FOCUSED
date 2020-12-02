@@ -28,23 +28,23 @@
       "options": [
         {
           "label": "Alarm Tone",
-          "url": "/sounds/Alarm Tone.mp3"
+          "url": "Alarm Tone"
         },
         {
           "label": "Old Telephone Tone",
-          "url": "/sounds/Old Telephone Tone.mp3"
+          "url": "Old Telephone Tone"
         },
         {
           "label": "Notification Tone",
-          "url": "/sounds/Notification Tone.mp3"
+          "url": "Notification Tone"
         },
         {
           "label": "Buzzer Tone",
-          "url": "/sounds/Buzzer Tone.mp3"
+          "url": "Buzzer Tone"
         },
         {
           "label": "Cuckoo Tone",
-          "url": "/sounds/Cuckoo Tone.mp3"
+          "url": "Cuckoo Tone"
         }
       ]
     },
@@ -81,19 +81,19 @@
         "name": "pomodoroTimer",
         "label": "Pomodoro",
         "max": "60",
-        "min": "5"
+        "min": "1"
       },
       "shortbreak": {
         "name": "shortBreakTimer",
         "label": "Short Break",
         "max": "15",
-        "min": "2"
+        "min": "1"
       },
       "longbreak": {
         "name": "longBreakTimer",
         "label": "Long Break",
         "max": "30",
-        "min": "5"
+        "min": "1"
       }
     },
     "buttons": [

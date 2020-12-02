@@ -60,9 +60,9 @@ const ThemeToggler = ({ data }) => {
   return (
     <div className={classes.toggleWrapper} onClick={toggleTheme}>
       {theme === "light" ? (
-        <DarkModeIcon className={classes.icon} />
+        <DarkModeIcon color="primary" className={classes.icon} />
       ) : (
-        <LightModeIcon className={classes.icon} />
+        <LightModeIcon color="primary" className={classes.icon} />
       )}
     </div>
   );

@@ -49,7 +49,7 @@ const SettingsButton = ({ data }) => {
 
   return (
     <div className={classes.settingsWrapper} onClick={toggleTheme}>
-      <SettingsIcon className={classes.icon}/>
+      <SettingsIcon color="primary" className={classes.icon}/>
     </div>
   );
 };
