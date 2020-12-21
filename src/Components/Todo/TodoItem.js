@@ -49,7 +49,7 @@ const useStyles = makeStyles((theme) => ({
     margin: "-.9rem 0 0 2.6rem",
     display: "block",
     paddingBottom: ".8rem",
-    color: "#999",
+    color: "#222",
     fontSize: ".9rem",
   },
 }));

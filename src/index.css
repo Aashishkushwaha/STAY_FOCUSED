@@ -7,15 +7,29 @@
 }
 
 body {
+  font-family: sans-serif;
   height: calc( 100vh - 2rem );
   margin: 1rem 2rem;
 }
 
-@media screen and (max-width: 600px) {
+@media screen and (max-width: 961px) {
+  .main__container > *:first-child{
+    order: 2
+  }
+}
+
+@media screen and (max-width: 601px) {
   html {
     font-size: 70% !important;
   }
   body {
     margin: .5rem;
+  }
+}
+
+@media screen and (max-height: 601px) {
+  .pomodoro__screen {
+    font-size: 4rem !important;
+    margin: .5rem auto .8rem !important;
   }
 }

@@ -24,16 +24,7 @@ function App() {
   useEffect(() => {
     async function fetchData(URL) {
       let response = await (await fetch(URL)).json();
-
-      // response?.settings.sounds?.options?.map((option) => {
-      //   let audio = document.createElement("audio");
-      //   audio.src = option.url;
-      //   document.body.appendChild(audio);
-      //   return null;
-      // });
-
       initAudio();
-
       setSchema(response);
     }
 
@@ -41,7 +32,7 @@ function App() {
   }, []);
 
   return (
-    <div>
+    <main>
       <ThemeProvider theme={themes[theme]}>
         <Header />
         <ThemeToggler data={{ theme, changeTheme }} />
@@ -55,7 +46,7 @@ function App() {
             setOpen={setOpenSettings}
           />
         )}
-        <Grid container spacing={2}>
+        <Grid className="main__container" container spacing={2}>
           <Grid item xs={12} md={5} lg={4}>
             <TodoList data={{ todos, setTodos }} />
           </Grid>
@@ -64,7 +55,7 @@ function App() {
           </Grid>
         </Grid>
       </ThemeProvider>
-    </div>
+    </main>
   );
 }
 

@@ -12,6 +12,10 @@ const useStyles = makeStyles((theme) => ({
     minHeight: "80vh",
     position: "relative",
   },
+  heading: {
+    fontSize: "1.4rem",
+    fontWeight: "400"
+  },
   textField: {
     width: "100%",
     margin: "1rem 0",
@@ -55,9 +59,12 @@ const TodoList = ({ data }) => {
 
   const addTodo = () => {
     if (taskName.trim() === "" || taskName.trim().length > 35) {
-      return enqueueSnackbar("Enter task name... (max. 35 characters allowed)", {
-        variant: "error",
-      });
+      return enqueueSnackbar(
+        "Enter task name... (max. 35 characters allowed)",
+        {
+          variant: "error",
+        }
+      );
     }
 
     let newTodoItem = {
@@ -94,7 +101,7 @@ const TodoList = ({ data }) => {
 
   return (
     <Paper className={classes.container}>
-      {header && <Typography variant="h5">{header}</Typography>}
+      {header && <p className={classes.heading}>{header}</p>}
       <TextField
         required
         maxLength={50}

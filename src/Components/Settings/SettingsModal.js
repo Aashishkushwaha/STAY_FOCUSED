@@ -24,6 +24,7 @@ import {
   afterDelay,
   audioFile,
   clearAudioBuffer,
+  playSound,
 } from "../../utils";
 import { useSnackbar } from "notistack";
 
@@ -148,11 +149,7 @@ export default function SettingsModal({ settings, open, setOpen }) {
   };
 
   const onSoundTestClick = () => {
-    if (audioFile) {
-      audioFile.src = `/sounds/${settingsState.sound}.mp3`
-      audioFile.volume = settingsState.volume / 100;
-      audioFile.play();
-    }
+    playSound(`/sounds/${settingsState.sound}.mp3`, settingsState.volume);
   };
 
   buttonHandlers.push(onSaveClick, onResetClick, onSoundTestClick);

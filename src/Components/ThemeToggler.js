@@ -1,4 +1,4 @@
-import React, { useEffect } from "react";
+import React from "react";
 import LightModeIcon from "@material-ui/icons/Brightness7";
 import DarkModeIcon from "@material-ui/icons/Brightness4";
 import { makeStyles } from "@material-ui/core/styles";
@@ -51,11 +51,6 @@ const ThemeToggler = ({ data }) => {
     document.body.style.backgroundColor = themes[newTheme].palette.primary.main;
     changeTheme(newTheme);
   };
-
-  useEffect(() => {
-    // saveToLocalStorage(`${APP_NAME}_selected-theme`, theme);
-    // document.body.style.backgroundColor = themes[theme].palette.primary.main;
-  }, [theme]);
 
   return (
     <div className={classes.toggleWrapper} onClick={toggleTheme}>

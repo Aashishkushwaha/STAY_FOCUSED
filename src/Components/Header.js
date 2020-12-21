@@ -3,7 +3,7 @@ import { makeStyles, Typography } from "@material-ui/core";
 
 const useStyles = makeStyles((theme) => ({
   header: {
-    padding: ".8rem 1.2rem",
+    padding: ".8rem 0rem",
     color: "#fff",
     borderRadius: ".2rem",
     display: "flex",
