@@ -9,7 +9,7 @@ import {
   makeStyles,
 } from "@material-ui/core";
 import { useSnackbar } from "notistack";
-import { APP_NAME, getFromLocalStorage, playSound } from "../../utils";
+import { playSound } from "../../utils";
 
 const useStyles = makeStyles(() => ({
   root: {
@@ -42,7 +42,7 @@ const useStyles = makeStyles(() => ({
   },
 }));
 
-const Pomodoro = ({ header = "Pomodoro" }) => {
+const Pomodoro = ({ header = "Pomodoro", settings }) => {
   const classes = useStyles();
   const [currentTab, setCurrentTab] = useState(0);
   const [seconds, setSeconds] = useState(0);
@@ -50,7 +50,6 @@ const Pomodoro = ({ header = "Pomodoro" }) => {
   const [timerId, setTimerId] = useState(null);
   const [timerCompletedCount, setTimerCompletedCountCount] = useState(0);
   const [timerStatus, setTimerStatus] = useState("paused");
-  let settings = getFromLocalStorage(`${APP_NAME}_settings`);
   const [minutes, setMinutes] = useState(settings?.pomodoroTimer);
   const [shortBreaksCompleted, setShortBreaksCompleted] = useState(0);
   const [longTaskCompleted, setLongTaskCompleted] = useState(false);
@@ -172,6 +171,15 @@ const Pomodoro = ({ header = "Pomodoro" }) => {
     }
   }, [turn, seconds, minutes, timerId, resetTimer, enqueueSnackbar]);
 
+  useEffect(() => {
+    pauseTimer();
+    if (turn === "timer") setMinutes(settings?.pomodoroTimer);
+    else if (turn === "shortbreak") setMinutes(settings?.shortBreakTimer);
+    else setMinutes(settings?.longBreakTimer);
+    setSeconds(0);
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [settings]);
+
   return (
     <Paper className={classes.root}>
       <p className={classes.heading}>{header}</p>
@@ -189,11 +197,15 @@ const Pomodoro = ({ header = "Pomodoro" }) => {
         </Tabs>
       </Paper>
       <Grid>
-        <Typography variant="h1" component="h1" className={`${classes.timer} pomodoro__screen`}>
+        <Typography
+          variant="h1"
+          component="h1"
+          className={`${classes.timer} pomodoro__screen`}
+        >
           {minutes < 10 ? `0${minutes}` : minutes} :{" "}
           {seconds < 10 ? `0${seconds}` : seconds}
         </Typography>
-        <Grid container justify="center">
+        <Grid container justifyContent="center">
           <Button
             className={classes.button}
             onClick={timerStatus === "running" ? pauseTimer : startTimer}

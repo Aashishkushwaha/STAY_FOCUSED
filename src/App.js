@@ -7,12 +7,19 @@ import Pomodoro from "./Components/Pomodoro/Pomodoro";
 import { ThemeProvider, Grid } from "@material-ui/core";
 import SettingsModal from "./Components/Settings/SettingsModal";
 import SettingsButton from "./Components/Settings/SettingsButton";
-import { APP_NAME, SCHEMA_URL, getFromLocalStorage, initAudio } from "./utils";
+import {
+  APP_NAME,
+  SCHEMA_URL,
+  getFromLocalStorage,
+  initAudio,
+  initialSettingsState,
+} from "./utils";
 
 function App() {
   const [theme, changeTheme] = useState(
     getFromLocalStorage(`${APP_NAME}_selected_theme`) || "light"
   );
+
   const [todos, setTodos] = useState({
     header: "My Tasks",
     items: getFromLocalStorage(`${APP_NAME}_todos_items`) || [],
@@ -20,6 +27,9 @@ function App() {
 
   const [schema, setSchema] = useState("");
   const [openSettings, setOpenSettings] = useState(false);
+  const [settings, setSettings] = useState(
+    getFromLocalStorage(`${APP_NAME}_settings`) || initialSettingsState
+  );
 
   useEffect(() => {
     async function fetchData(URL) {
@@ -41,7 +51,9 @@ function App() {
         />
         {schema?.settings && (
           <SettingsModal
-            settings={schema?.settings}
+            settingsSchema={schema?.settings}
+            settingsState={settings}
+            setSettingsState={setSettings}
             open={openSettings}
             setOpen={setOpenSettings}
           />
@@ -51,7 +63,7 @@ function App() {
             <TodoList data={{ todos, setTodos }} />
           </Grid>
           <Grid item xs={12} md={7} lg={8}>
-            <Pomodoro />
+            <Pomodoro settings={settings} />
           </Grid>
         </Grid>
       </ThemeProvider>

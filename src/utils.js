@@ -17,6 +17,19 @@ export const initialSettingsState = {
   browserNotification: true,
 };
 
+export const browserNotificationsEnabled = () => {
+  if (window?.Notification) return Notification.permission;
+  else return "denied";
+};
+
+export const getUserPermissionForNotifications = () => {
+  if (Notification.permission !== "denied") {
+    Notification.requestPermission((permission) => {
+      console.log(permission);
+    });
+  }
+};
+
 export const saveToLocalStorage = (key, value) => {
   localStorage.setItem(key, JSON.stringify(value));
 };

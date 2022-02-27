@@ -1,4 +1,4 @@
-import React, { useState } from "react";
+import React from "react";
 import {
   Button,
   TextField,
@@ -27,6 +27,10 @@ import {
   playSound,
 } from "../../utils";
 import { useSnackbar } from "notistack";
+import {
+  browserNotificationsEnabled,
+  getUserPermissionForNotifications,
+} from "../../utils";
 
 const useStyles = makeStyles((theme) => ({
   container: {},
@@ -78,19 +82,15 @@ const validateData = (data, settings) => {
   } else return 1;
 };
 
-export default function SettingsModal({ settings, open, setOpen }) {
-  const {
-    header,
-    checkboxes,
-    volume,
-    timers,
-    buttons,
-    sounds,
-    goal,
-  } = settings;
-  const [settingsState, setSettingsState] = useState(
-    getFromLocalStorage(`${APP_NAME}_settings`) || initialSettingsState
-  );
+export default function SettingsModal({
+  settingsSchema,
+  settingsState,
+  setSettingsState,
+  open,
+  setOpen,
+}) {
+  const { header, checkboxes, volume, timers, buttons, sounds, goal } =
+    settingsSchema;
   const buttonHandlers = [];
   const classes = useStyles();
   const { enqueueSnackbar } = useSnackbar();
@@ -107,6 +107,31 @@ export default function SettingsModal({ settings, open, setOpen }) {
   const onChange = (e, type) => {
     if (type === "checkbox") {
       setSettingsState({ ...settingsState, [e.target.name]: e.target.checked });
+
+      if (e.target.name === "browserNotification" && e.target.checked) {
+        if (browserNotificationsEnabled() === "default") {
+          getUserPermissionForNotifications();
+        } else {
+          if (browserNotificationsEnabled() === "granted") {
+            console.log("show notification");
+            // new Notification("Sample", {
+            //   body: "This is the body.",
+            // });
+
+            if (document.visibilityState === "visible") {
+              return;
+            }
+            var title = "Stay Focused";
+            // var icon = "image-url";
+            var body = "Message to be displayed";
+            var notification = new Notification(title, { body });
+            notification.onclick = () => {
+              notification.close();
+              window.parent.focus();
+            };
+          }
+        }
+      }
     } else if (type === "number") {
       let value = parseInt(e.target.value);
       if (e.target.name === "volume" && audioFile) {
@@ -129,7 +154,7 @@ export default function SettingsModal({ settings, open, setOpen }) {
 
   const onSaveClick = () => {
     clearAudioBuffer(audioFile);
-    if (validateData(settingsState, settings)) {
+    if (validateData(settingsState, settingsSchema)) {
       saveToLocalStorage(`${APP_NAME}_settings`, settingsState);
       setOpen(false);
       enqueueSnackbar("Settings saved successfully.", { variant: "success" });
