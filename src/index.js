@@ -5,7 +5,7 @@ import "./index.css";
 import App from "./App";
 import reportWebVitals from "./reportWebVitals";
 import themes from "./theme";
-import { SnackbarProvider } from "notistack";
+
 import {
   APP_NAME,
   getFromLocalStorage,
@@ -28,12 +28,7 @@ document.body.style.backgroundColor =
     getFromLocalStorage(`${APP_NAME}_selected_theme`) || "light"
   ].palette.primary.main;
 
-ReactDOM.render(
-  <SnackbarProvider maxSnack={4}>
-    <App />
-  </SnackbarProvider>,
-  document.getElementById("root")
-);
+ReactDOM.render(<App />, document.getElementById("root"));
 
 // If you want to start measuring performance in your app, pass a function
 // to log results (for example: reportWebVitals(console.log))

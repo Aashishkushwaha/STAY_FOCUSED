@@ -26,11 +26,11 @@ import {
   clearAudioBuffer,
   playSound,
 } from "../../utils";
-import { useSnackbar } from "notistack";
 import {
   browserNotificationsEnabled,
   getUserPermissionForNotifications,
 } from "../../utils";
+import { showToast } from "../../App";
 
 const useStyles = makeStyles((theme) => ({
   container: {},
@@ -93,7 +93,6 @@ export default function SettingsModal({
     settingsSchema;
   const buttonHandlers = [];
   const classes = useStyles();
-  const { enqueueSnackbar } = useSnackbar();
 
   const handleClose = () => {
     clearAudioBuffer(audioFile);
@@ -157,9 +156,9 @@ export default function SettingsModal({
     if (validateData(settingsState, settingsSchema)) {
       saveToLocalStorage(`${APP_NAME}_settings`, settingsState);
       setOpen(false);
-      enqueueSnackbar("Settings saved successfully.", { variant: "success" });
+      showToast("Settings saved successfully.", { variant: "success" });
     } else {
-      enqueueSnackbar("Error, please provided correct data.", {
+      showToast("Error, please provided correct data.", {
         variant: "error",
       });
       setSettingsState(getFromLocalStorage(`${APP_NAME}_settings`));

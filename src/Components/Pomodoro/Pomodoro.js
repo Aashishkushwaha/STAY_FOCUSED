@@ -8,8 +8,8 @@ import {
   Typography,
   makeStyles,
 } from "@material-ui/core";
-import { useSnackbar } from "notistack";
 import { playSound } from "../../utils";
+import { showToast } from "../../App";
 
 const useStyles = makeStyles(() => ({
   root: {
@@ -53,7 +53,7 @@ const Pomodoro = ({ header = "Pomodoro", settings }) => {
   const [minutes, setMinutes] = useState(settings?.pomodoroTimer);
   const [shortBreaksCompleted, setShortBreaksCompleted] = useState(0);
   const [longTaskCompleted, setLongTaskCompleted] = useState(false);
-  const { enqueueSnackbar } = useSnackbar();
+
   const autoStart = settings?.autoStart;
 
   const handleTabChange = (event, newValue, sameTab) => {
@@ -83,6 +83,12 @@ const Pomodoro = ({ header = "Pomodoro", settings }) => {
     setSeconds((seconds) => seconds - 1);
   };
 
+  useEffect(() => {
+    settings?.timerIndication &&
+      (document.title = `${minutes}:${seconds} | Stay Focused`);
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [seconds]);
+
   const pauseTimer = useCallback(() => {
     setTimerStatus("paused");
     if (timerId) clearInterval(timerId);
@@ -93,9 +99,11 @@ const Pomodoro = ({ header = "Pomodoro", settings }) => {
     setTimerStatus("running");
     let timer = setInterval(tick, 1000);
     setTimerId(timer);
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [pauseTimer]);
 
   const resetTimer = useCallback(() => {
+    document.title = "Stay Focused | Pomodoro";
     switch (turn) {
       case "timer":
         if (
@@ -160,16 +168,16 @@ const Pomodoro = ({ header = "Pomodoro", settings }) => {
         setMinutes((minutes) => minutes - 1);
         setSeconds(59);
       } else {
-        enqueueSnackbar(
-          `${turn.charAt(0).toUpperCase() + turn.slice(1)} got over.`,
-          { variant: "info" }
-        );
+        showToast(`${turn.charAt(0).toUpperCase() + turn.slice(1)} got over.`, {
+          variant: "info",
+        });
         playSound();
         clearInterval(timerId);
         resetTimer();
       }
     }
-  }, [turn, seconds, minutes, timerId, resetTimer, enqueueSnackbar]);
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [turn, seconds, minutes, timerId, resetTimer]);
 
   useEffect(() => {
     pauseTimer();

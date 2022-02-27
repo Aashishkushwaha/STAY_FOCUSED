@@ -7,13 +7,17 @@ import Pomodoro from "./Components/Pomodoro/Pomodoro";
 import { ThemeProvider, Grid } from "@material-ui/core";
 import SettingsModal from "./Components/Settings/SettingsModal";
 import SettingsButton from "./Components/Settings/SettingsButton";
+import { ToastContainer, toast } from "react-toastify";
 import {
   APP_NAME,
   SCHEMA_URL,
   getFromLocalStorage,
   initAudio,
   initialSettingsState,
+  audioFile,
+  clearAudioBuffer,
 } from "./utils";
+import "react-toastify/dist/ReactToastify.css";
 
 function App() {
   const [theme, changeTheme] = useState(
@@ -44,6 +48,13 @@ function App() {
   return (
     <main>
       <ThemeProvider theme={themes[theme]}>
+        <ToastContainer
+          position="bottom-left"
+          autoClose={3000}
+          hideProgressBar={false}
+          newestOnTop={true}
+          closeOnClick
+        />
         <Header />
         <ThemeToggler data={{ theme, changeTheme }} />
         <SettingsButton
@@ -70,5 +81,24 @@ function App() {
     </main>
   );
 }
+
+export const showToast = (msg, { variant } = "info") => {
+  audioFile &&
+    setTimeout(() => {
+      clearAudioBuffer(audioFile);
+    }, 4000);
+  switch (variant) {
+    case "success":
+      toast.success(msg);
+      break;
+    case "error":
+      toast.error(msg);
+      break;
+    case "info":
+    default:
+      toast.info(msg);
+      break;
+  }
+};
 
 export default App;
