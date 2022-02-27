@@ -1,6 +1,7 @@
 export const APP_NAME = "STAY_FOCUSED";
 
 export const SCHEMA_URL = process.env.REACT_APP_SCHEMA_LOCAL_URL;
+export const NOTIFICATION_ICON = process.env.REACT_APP_NOTIFICATION_ICON;
 
 export const initialTheme = "light";
 
@@ -27,6 +28,22 @@ export const getUserPermissionForNotifications = () => {
     Notification.requestPermission((permission) => {
       console.log(permission);
     });
+  }
+};
+
+export const showBrowserNotification = (body) => {
+  if (browserNotificationsEnabled() === "granted") {
+    var notification = new Notification("Stay Focused", {
+      body,
+      vibrate: [200, 100, 200],
+      icon: NOTIFICATION_ICON,
+      badge: NOTIFICATION_ICON,
+    });
+
+    notification.onclick = () => {
+      notification.close();
+      window.parent.focus();
+    };
   }
 };
 

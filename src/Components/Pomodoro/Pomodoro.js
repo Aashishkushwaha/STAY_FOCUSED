@@ -8,7 +8,7 @@ import {
   Typography,
   makeStyles,
 } from "@material-ui/core";
-import { playSound } from "../../utils";
+import { playSound, showBrowserNotification } from "../../utils";
 import { showToast } from "../../App";
 
 const useStyles = makeStyles(() => ({
@@ -168,9 +168,11 @@ const Pomodoro = ({ header = "Pomodoro", settings }) => {
         setMinutes((minutes) => minutes - 1);
         setSeconds(59);
       } else {
-        showToast(`${turn.charAt(0).toUpperCase() + turn.slice(1)} got over.`, {
+        const msg = `${turn.charAt(0).toUpperCase() + turn.slice(1)} got over.`;
+        showToast(msg, {
           variant: "info",
         });
+        settings?.browserNotification && showBrowserNotification(msg);
         playSound();
         clearInterval(timerId);
         resetTimer();

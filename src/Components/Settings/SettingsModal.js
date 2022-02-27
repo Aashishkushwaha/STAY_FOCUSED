@@ -108,28 +108,12 @@ export default function SettingsModal({
       setSettingsState({ ...settingsState, [e.target.name]: e.target.checked });
 
       if (e.target.name === "browserNotification" && e.target.checked) {
-        if (browserNotificationsEnabled() === "default") {
-          getUserPermissionForNotifications();
-        } else {
-          if (browserNotificationsEnabled() === "granted") {
-            console.log("show notification");
-            // new Notification("Sample", {
-            //   body: "This is the body.",
-            // });
-
-            if (document.visibilityState === "visible") {
-              return;
-            }
-            var title = "Stay Focused";
-            // var icon = "image-url";
-            var body = "Message to be displayed";
-            var notification = new Notification(title, { body });
-            notification.onclick = () => {
-              notification.close();
-              window.parent.focus();
-            };
-          }
-        }
+        const permission = browserNotificationsEnabled();
+        if (permission === "default") getUserPermissionForNotifications();
+        else if (permission === "denied")
+          showToast(
+            "Please enable the notification permission to 'allow' from browser settings."
+          );
       }
     } else if (type === "number") {
       let value = parseInt(e.target.value);
