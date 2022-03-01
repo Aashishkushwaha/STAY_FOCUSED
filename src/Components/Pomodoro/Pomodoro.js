@@ -9,7 +9,7 @@ import {
   makeStyles,
 } from "@material-ui/core";
 import { playSound, showBrowserNotification } from "../../utils";
-import { showToast } from "../../App";
+import { showToast } from "../../utils";
 
 const useStyles = makeStyles(() => ({
   root: {

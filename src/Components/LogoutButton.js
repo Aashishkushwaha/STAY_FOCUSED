@@ -3,7 +3,7 @@ import { useNavigate } from "react-router-dom";
 import LogoutIcon from "@material-ui/icons/ExitToAppTwoTone";
 import { makeStyles } from "@material-ui/core/styles";
 import { APP_NAME, saveToLocalStorage } from "../utils";
-import { showToast } from "../App";
+import { showToast } from "../utils";
 
 const useStyles = makeStyles((theme) => ({
   settingsWrapper: {

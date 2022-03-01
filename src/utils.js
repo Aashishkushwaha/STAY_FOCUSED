@@ -1,7 +1,10 @@
+import { toast } from "react-toastify";
+
 export const APP_NAME = "STAY_FOCUSED";
 
 export const SCHEMA_URL = process.env.REACT_APP_SCHEMA_LOCAL_URL;
 export const NOTIFICATION_ICON = process.env.REACT_APP_NOTIFICATION_ICON;
+export const API_BASE_URL = process.env.REACT_APP_API_BASE_URL;
 
 export const initialTheme = "light";
 
@@ -84,5 +87,24 @@ export const playSound = (sound, volume) => {
     audioFile.src = sound || `/sounds/${settings.sound}.mp3`;
     audioFile.volume = (volume || settings.volume) / 100;
     audioFile.play();
+  }
+};
+
+export const showToast = (msg, { variant } = "info") => {
+  audioFile &&
+    setTimeout(() => {
+      clearAudioBuffer(audioFile);
+    }, 4000);
+  switch (variant) {
+    case "success":
+      toast.success(msg);
+      break;
+    case "error":
+      toast.error(msg);
+      break;
+    case "info":
+    default:
+      toast.info(msg);
+      break;
   }
 };

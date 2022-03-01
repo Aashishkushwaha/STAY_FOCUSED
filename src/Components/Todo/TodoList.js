@@ -1,9 +1,22 @@
 import React, { useState } from "react";
-import { Typography, Paper, makeStyles, TextField } from "@material-ui/core";
+import {
+  Typography,
+  Paper,
+  makeStyles,
+  TextField,
+  CircularProgress,
+} from "@material-ui/core";
 import Pagination from "@material-ui/lab/Pagination";
 import TodoItem from "./TodoItem";
-import { saveToLocalStorage, APP_NAME } from "../../utils";
-import { showToast } from "../../App";
+import { useNavigate } from "react-router-dom";
+import {
+  saveToLocalStorage,
+  APP_NAME,
+  showToast,
+  getFromLocalStorage,
+  API_BASE_URL,
+} from "../../utils";
+import axios from "axios";
 
 const useStyles = makeStyles((theme) => ({
   container: {
@@ -40,59 +53,139 @@ const useStyles = makeStyles((theme) => ({
   infoLabel: {
     margin: "1rem 0rem",
   },
+  spinner: {
+    position: "absolute",
+    top: "50%",
+    left: "50%",
+    transform: "translate(-50%, -50%)",
+  },
 }));
 
 const TodoList = ({ data }) => {
   const classes = useStyles();
-  const { todos, setTodos } = data;
+  const { todos, setTodos, loading } = data;
   const { header, items } = todos;
+  const navigate = useNavigate();
 
-  let TODOS_PER_PAGE = 7;
+  const TODOS_PER_PAGE = 7;
+  const token = getFromLocalStorage(`${APP_NAME}_token`);
 
   const [taskName, setTaskName] = useState("");
-  const [page, setPage] = React.useState(1);
+  const [editableTodoId, setEditableTodoId] = useState(null);
+  const [page, setPage] = useState(1);
 
   const handleChange = (event, value) => {
     setPage(value);
   };
 
-  const addTodo = () => {
+  const logout = () => {
+    showToast("Session expired", { variant: "error" });
+    saveToLocalStorage(`${APP_NAME}_token`, "");
+    navigate("/login");
+  };
+
+  const editHandler = (id, text) => {
+    setTaskName(text);
+    setEditableTodoId(id);
+  };
+
+  const addTodo = async () => {
     if (taskName.trim() === "" || taskName.trim().length > 35) {
       return showToast("Enter task name... (max. 35 characters allowed)", {
         variant: "error",
       });
     }
 
-    let newTodoItem = {
-      id: items?.length + 1,
-      text: taskName,
-      createdAt: new Date(),
-      isCompleted: false,
-    };
+    if (editableTodoId) return editTodo();
 
-    let newItems = [newTodoItem, ...items];
+    try {
+      const {
+        data: { todo, message },
+      } = await axios.post(
+        `${API_BASE_URL}/todos`,
+        { text: taskName },
+        {
+          headers: { authorization: `Bearer ${token}` },
+        }
+      );
+      let newItems = [todo, ...items];
 
-    setTaskName("");
-    setTodos({ ...todos, items: newItems });
-    saveToLocalStorage(`${APP_NAME}_todos_items`, newItems);
-  };
-
-  const toggleTodo = (id) => {
-    let index = items.findIndex((item) => item.id === id);
-    let newItems = [...todos.items];
-
-    if (index !== -1) {
-      newItems[index].isCompleted = !newItems[index].isCompleted;
+      setTaskName("");
+      showToast(message, { variant: "success" });
       setTodos({ ...todos, items: newItems });
-      saveToLocalStorage(`${APP_NAME}_todos_items`, newItems);
+    } catch (err) {
+      logout();
     }
   };
 
-  const removeTodo = (id) => {
-    let newItems = items.filter((item) => item.id !== id);
+  const editTodo = async () => {
+    let index = items.findIndex((item) => item._id === editableTodoId);
+    let newItems = [...todos.items];
 
-    setTodos({ ...todos, items: newItems });
-    saveToLocalStorage(`${APP_NAME}_todos_items`, newItems);
+    if (index !== -1) {
+      try {
+        const {
+          data: { message },
+        } = await axios.put(
+          `${API_BASE_URL}/todos`,
+          { _id: editableTodoId, text: taskName },
+          {
+            headers: { authorization: `Bearer ${token}` },
+          }
+        );
+
+        showToast(message, { variant: "success" });
+        newItems[index].text = taskName;
+        setTodos({ ...todos, items: newItems });
+        setTaskName("");
+        setEditableTodoId(null);
+      } catch (err) {
+        logout();
+      }
+    }
+  };
+
+  const toggleTodo = async (id) => {
+    let index = items.findIndex((item) => item._id === id);
+    let newItems = [...todos.items];
+
+    if (index !== -1) {
+      try {
+        const {
+          data: { message },
+        } = await axios.put(
+          `${API_BASE_URL}/todos`,
+          { _id: id, completed: !newItems[index].completed },
+          {
+            headers: { authorization: `Bearer ${token}` },
+          }
+        );
+
+        showToast(message, { variant: "success" });
+        newItems[index].completed = !newItems[index].completed;
+        setTodos({ ...todos, items: newItems });
+      } catch (err) {
+        logout();
+      }
+    }
+  };
+
+  const removeTodo = async (_id) => {
+    let newItems = items.filter((item) => item._id !== _id);
+
+    try {
+      const {
+        data: { message },
+      } = await axios.delete(`${API_BASE_URL}/todos`, {
+        headers: { authorization: `Bearer ${token}` },
+        data: { _id },
+      });
+
+      showToast(message, { variant: "success" });
+      setTodos({ ...todos, items: newItems });
+    } catch (err) {
+      logout();
+    }
   };
 
   return (
@@ -111,6 +204,7 @@ const TodoList = ({ data }) => {
         onChange={(e) => setTaskName(e.target.value)}
         onKeyPress={(e) => (e.key === "Enter" ? addTodo() : "")}
       />
+      {loading && <CircularProgress className={classes.spinner} />}
       {items.length ? (
         <>
           {items
@@ -120,8 +214,8 @@ const TodoList = ({ data }) => {
             )
             ?.map((item) => (
               <TodoItem
-                key={item.id}
-                data={{ ...item, toggleTodo, removeTodo }}
+                key={item._id}
+                data={{ ...item, editHandler, toggleTodo, removeTodo }}
               />
             ))}
           <div className={classes.pagination}>

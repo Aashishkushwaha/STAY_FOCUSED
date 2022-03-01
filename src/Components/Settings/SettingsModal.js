@@ -30,7 +30,7 @@ import {
   browserNotificationsEnabled,
   getUserPermissionForNotifications,
 } from "../../utils";
-import { showToast } from "../../App";
+import { showToast } from "../../utils";
 
 const useStyles = makeStyles((theme) => ({
   container: {},

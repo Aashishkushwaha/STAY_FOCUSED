@@ -4,9 +4,13 @@ import {
   Checkbox,
   makeStyles,
   IconButton,
+  Menu,
+  MenuItem,
   FormControlLabel,
 } from "@material-ui/core";
 import DeleteIcon from "@material-ui/icons/Delete";
+import EditIcon from "@material-ui/icons/Edit";
+import MoreIcon from "@material-ui/icons/MoreVert";
 
 const useStyles = makeStyles((theme) => ({
   container: {
@@ -36,11 +40,17 @@ const useStyles = makeStyles((theme) => ({
     color: theme.palette.primary.main,
     transition: "color .1s",
   },
+  menuIcons: {
+    color: theme.palette.primary.main,
+    transition: "color .1s",
+    transform: "scale(.75)",
+    marginRight: ".5rem",
+  },
   label: {
     textOverflow: "ellipsis",
     display: "inline-block",
     overflow: "hidden",
-    textDecoration: (isCompleted) => isCompleted && "line-through",
+    textDecoration: (completed) => completed && "line-through",
   },
   completed: {
     textDecoration: "strike-through",
@@ -59,8 +69,29 @@ const getModifiedDate = (date) => {
 };
 
 const TodoItem = ({ data }) => {
-  const { isCompleted, text, id, toggleTodo, removeTodo, createdAt } = data;
-  const classes = useStyles(isCompleted);
+  const {
+    completed,
+    text,
+    _id,
+    toggleTodo,
+    editHandler,
+    removeTodo,
+    createdAt,
+  } = data;
+  const classes = useStyles(completed);
+  const [anchorEl, setAnchorEl] = React.useState(null);
+  const open = Boolean(anchorEl);
+  const handleClick = (event) => {
+    setAnchorEl(event.currentTarget);
+  };
+  const handleClose = () => {
+    setAnchorEl(null);
+  };
+
+  const handleEdit = () => {
+    editHandler(_id, text);
+    handleClose();
+  };
 
   return (
     <div className={classes.container}>
@@ -69,8 +100,8 @@ const TodoItem = ({ data }) => {
           control={
             <Checkbox
               className={classes.checkBox}
-              checked={isCompleted}
-              onChange={() => toggleTodo(id)}
+              checked={completed}
+              onChange={() => toggleTodo(_id)}
               color="primary"
             />
           }
@@ -83,12 +114,35 @@ const TodoItem = ({ data }) => {
       </div>
       <div>
         <IconButton
-          onClick={() => removeTodo(id)}
-          className={classes.deleteButton}
-          aria-label="delete"
+          id="basic-button"
+          aria-controls={open ? "basic-menu" : undefined}
+          aria-haspopup="true"
+          aria-expanded={open ? "true" : undefined}
+          onClick={handleClick}
         >
-          <DeleteIcon className={classes.deleteIcon} />
+          <MoreIcon className={classes.deleteIcon} />
         </IconButton>
+        <Menu
+          id="basic-menu"
+          anchorEl={anchorEl}
+          open={open}
+          onClose={handleClose}
+          MenuListProps={{
+            "aria-labelledby": "basic-button",
+          }}
+        >
+          <MenuItem onClick={handleEdit}>
+            <EditIcon className={classes.menuIcons} /> Edit
+          </MenuItem>
+          <MenuItem
+            onClick={() => {
+              handleClose();
+              removeTodo(_id);
+            }}
+          >
+            <DeleteIcon className={classes.menuIcons} /> Delete
+          </MenuItem>
+        </Menu>
       </div>
     </div>
   );

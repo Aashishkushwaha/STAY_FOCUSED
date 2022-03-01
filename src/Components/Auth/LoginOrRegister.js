@@ -9,8 +9,12 @@ import {
   makeStyles,
 } from "@material-ui/core";
 import axios from "axios";
-import { showToast } from "../../App";
-import { APP_NAME, saveToLocalStorage } from "../../utils";
+import {
+  saveToLocalStorage,
+  showToast,
+  APP_NAME,
+  API_BASE_URL,
+} from "../../utils";
 
 const useStyles = makeStyles(() => ({
   root: {
@@ -67,10 +71,7 @@ const Login = () => {
     try {
       const {
         data: { token = "", message },
-      } = await axios.post(
-        `http://localhost:5000/auth/${currentPage}`,
-        userData
-      );
+      } = await axios.post(`${API_BASE_URL}/auth/${currentPage}`, userData);
 
       if (currentPage === "login")
         saveToLocalStorage(`${APP_NAME}_token`, token);
@@ -83,7 +84,6 @@ const Login = () => {
     } catch (err) {
       const { message } = err.response.data;
       showToast(message, { variant: "error" });
-      console.log(message);
     }
   };
 

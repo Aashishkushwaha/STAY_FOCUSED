@@ -7,34 +7,41 @@ import Pomodoro from "./Components/Pomodoro/Pomodoro";
 import { ThemeProvider, Grid } from "@material-ui/core";
 import SettingsModal from "./Components/Settings/SettingsModal";
 import SettingsButton from "./Components/Settings/SettingsButton";
-import { ToastContainer, toast } from "react-toastify";
-import { Navigate, Route, Routes } from "react-router-dom";
+import { ToastContainer } from "react-toastify";
+import { Navigate, Route, Routes, useNavigate } from "react-router-dom";
 import {
   APP_NAME,
   SCHEMA_URL,
   getFromLocalStorage,
   initAudio,
   initialSettingsState,
-  audioFile,
-  clearAudioBuffer,
+  showToast,
+  saveToLocalStorage,
+  API_BASE_URL,
 } from "./utils";
-import "react-toastify/dist/ReactToastify.css";
+import axios from "axios";
+import { useLocation } from "react-router-dom";
 import LoginOrRegister from "./Components/Auth/LoginOrRegister";
 import LogoutButton from "./Components/LogoutButton";
+import "react-toastify/dist/ReactToastify.css";
 
 function App() {
   const [theme, changeTheme] = useState(
     getFromLocalStorage(`${APP_NAME}_selected_theme`) || "light"
   );
   const token = getFromLocalStorage(`${APP_NAME}_token`);
+  const { pathname } = useLocation();
+  const navigate = useNavigate();
 
   const [todos, setTodos] = useState({
     header: "My Tasks",
-    items: getFromLocalStorage(`${APP_NAME}_todos_items`) || [],
+    // items: getFromLocalStorage(`${APP_NAME}_todos_items`) || [],
+    items: [],
   });
 
   const [schema, setSchema] = useState("");
   const [openSettings, setOpenSettings] = useState(false);
+  const [loading, setLoading] = useState(false);
   const [settings, setSettings] = useState(
     getFromLocalStorage(`${APP_NAME}_settings`) || initialSettingsState
   );
@@ -48,6 +55,32 @@ function App() {
 
     fetchData(SCHEMA_URL);
   }, []);
+
+  useEffect(() => {
+    const fetchTodos = async () => {
+      try {
+        if (token && pathname === "/app") {
+          setLoading(true);
+          const {
+            data: { todos },
+          } = await axios.get(`${API_BASE_URL}/todos`, {
+            headers: {
+              authorization: `Bearer ${token}`,
+            },
+          });
+          setTodos((oldValue) => ({ ...oldValue, items: todos }));
+        }
+      } catch (err) {
+        showToast("Session expired", { variant: "error" });
+        saveToLocalStorage(`${APP_NAME}_token`, "");
+        navigate("/login");
+      } finally {
+        setLoading(false);
+      }
+    };
+    fetchTodos();
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [token]);
 
   const mainContent = (
     <>
@@ -64,7 +97,7 @@ function App() {
       )}
       <Grid className="main__container" container spacing={2}>
         <Grid item xs={12} md={5} lg={4}>
-          <TodoList data={{ todos, setTodos }} />
+          <TodoList data={{ loading, todos, setTodos }} />
         </Grid>
         <Grid item xs={12} md={7} lg={8}>
           <Pomodoro settings={settings} />
@@ -98,24 +131,5 @@ function App() {
     </main>
   );
 }
-
-export const showToast = (msg, { variant } = "info") => {
-  audioFile &&
-    setTimeout(() => {
-      clearAudioBuffer(audioFile);
-    }, 4000);
-  switch (variant) {
-    case "success":
-      toast.success(msg);
-      break;
-    case "error":
-      toast.error(msg);
-      break;
-    case "info":
-    default:
-      toast.info(msg);
-      break;
-  }
-};
 
 export default App;
