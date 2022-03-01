@@ -8,6 +8,7 @@ import { ThemeProvider, Grid } from "@material-ui/core";
 import SettingsModal from "./Components/Settings/SettingsModal";
 import SettingsButton from "./Components/Settings/SettingsButton";
 import { ToastContainer, toast } from "react-toastify";
+import { Navigate, Route, Routes } from "react-router-dom";
 import {
   APP_NAME,
   SCHEMA_URL,
@@ -18,11 +19,14 @@ import {
   clearAudioBuffer,
 } from "./utils";
 import "react-toastify/dist/ReactToastify.css";
+import LoginOrRegister from "./Components/Auth/LoginOrRegister";
+import LogoutButton from "./Components/LogoutButton";
 
 function App() {
   const [theme, changeTheme] = useState(
     getFromLocalStorage(`${APP_NAME}_selected_theme`) || "light"
   );
+  const token = getFromLocalStorage(`${APP_NAME}_token`);
 
   const [todos, setTodos] = useState({
     header: "My Tasks",
@@ -45,6 +49,30 @@ function App() {
     fetchData(SCHEMA_URL);
   }, []);
 
+  const mainContent = (
+    <>
+      <SettingsButton data={{ open: openSettings, setOpen: setOpenSettings }} />
+      <LogoutButton />
+      {schema?.settings && (
+        <SettingsModal
+          settingsSchema={schema?.settings}
+          settingsState={settings}
+          setSettingsState={setSettings}
+          open={openSettings}
+          setOpen={setOpenSettings}
+        />
+      )}
+      <Grid className="main__container" container spacing={2}>
+        <Grid item xs={12} md={5} lg={4}>
+          <TodoList data={{ todos, setTodos }} />
+        </Grid>
+        <Grid item xs={12} md={7} lg={8}>
+          <Pomodoro settings={settings} />
+        </Grid>
+      </Grid>
+    </>
+  );
+
   return (
     <main>
       <ThemeProvider theme={themes[theme]}>
@@ -57,26 +85,15 @@ function App() {
         />
         <Header />
         <ThemeToggler data={{ theme, changeTheme }} />
-        <SettingsButton
-          data={{ open: openSettings, setOpen: setOpenSettings }}
-        />
-        {schema?.settings && (
-          <SettingsModal
-            settingsSchema={schema?.settings}
-            settingsState={settings}
-            setSettingsState={setSettings}
-            open={openSettings}
-            setOpen={setOpenSettings}
+        <Routes>
+          <Route path="/" element={<Navigate to="/login" />} />
+          <Route path="/login" element={<LoginOrRegister />} />
+          <Route path="/register" element={<LoginOrRegister />} />
+          <Route
+            path="/app"
+            element={token ? mainContent : <Navigate to="/login" />}
           />
-        )}
-        <Grid className="main__container" container spacing={2}>
-          <Grid item xs={12} md={5} lg={4}>
-            <TodoList data={{ todos, setTodos }} />
-          </Grid>
-          <Grid item xs={12} md={7} lg={8}>
-            <Pomodoro settings={settings} />
-          </Grid>
-        </Grid>
+        </Routes>
       </ThemeProvider>
     </main>
   );

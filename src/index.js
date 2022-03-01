@@ -5,6 +5,7 @@ import "./index.css";
 import App from "./App";
 import reportWebVitals from "./reportWebVitals";
 import themes from "./theme";
+import { BrowserRouter as Router } from "react-router-dom";
 
 import {
   APP_NAME,
@@ -28,7 +29,12 @@ document.body.style.backgroundColor =
     getFromLocalStorage(`${APP_NAME}_selected_theme`) || "light"
   ].palette.primary.main;
 
-ReactDOM.render(<App />, document.getElementById("root"));
+ReactDOM.render(
+  <Router>
+    <App />
+  </Router>,
+  document.getElementById("root")
+);
 
 // If you want to start measuring performance in your app, pass a function
 // to log results (for example: reportWebVitals(console.log))
