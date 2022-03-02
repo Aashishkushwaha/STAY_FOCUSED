@@ -58,8 +58,8 @@ const Login = () => {
   const currentPage = pathname.split("/")[1];
 
   const [userData, setUserData] = useState({
-    username: "Aashish@gmail.com",
-    password: "Aashish",
+    username: "",
+    password: "",
   });
 
   const resetFormFields = () => {
