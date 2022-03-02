@@ -85,7 +85,7 @@ function App() {
   const mainContent = (
     <>
       <SettingsButton data={{ open: openSettings, setOpen: setOpenSettings }} />
-      <LogoutButton />
+      <LogoutButton setTodos={setTodos} />
       {schema?.settings && (
         <SettingsModal
           settingsSchema={schema?.settings}

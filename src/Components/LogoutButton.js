@@ -42,11 +42,12 @@ const useStyles = makeStyles((theme) => ({
   },
 }));
 
-const SettingsButton = ({ data }) => {
+const LogoutButton = ({ setTodos }) => {
   const classes = useStyles();
   const navigate = useNavigate();
 
   const logout = () => {
+    setTodos((oldValue) => ({ ...oldValue, items: [] }));
     saveToLocalStorage(`${APP_NAME}_token`, "");
     showToast("Logged out successfully.", { variant: "success" });
     setTimeout(() => navigate("/login", { replace: true }), 500);
@@ -59,4 +60,4 @@ const SettingsButton = ({ data }) => {
   );
 };
 
-export default SettingsButton;
+export default LogoutButton;

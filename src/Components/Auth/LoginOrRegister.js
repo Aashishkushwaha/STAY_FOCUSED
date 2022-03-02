@@ -15,6 +15,7 @@ import {
   APP_NAME,
   API_BASE_URL,
 } from "../../utils";
+import LoadingScreen from "../LoadingScreen";
 
 const useStyles = makeStyles(() => ({
   root: {
@@ -61,6 +62,7 @@ const Login = () => {
     username: "",
     password: "",
   });
+  const [loading, setLoading] = useState(false);
 
   const resetFormFields = () => {
     setUserData({ username: "", password: "" });
@@ -68,6 +70,7 @@ const Login = () => {
 
   const submitHandler = async (e) => {
     e.preventDefault();
+    setLoading(true);
     try {
       const {
         data: { token = "", message },
@@ -84,11 +87,14 @@ const Login = () => {
     } catch (err) {
       const { message } = err.response.data;
       showToast(message, { variant: "error" });
+    } finally {
+      setLoading(false);
     }
   };
 
   return (
     <Card className={classes.root}>
+      <LoadingScreen visible={loading} />
       <CardContent>
         <form onSubmit={submitHandler}>
           <Typography className={classes.heading} gutterBottom>
